@@ -31,6 +31,10 @@ jobs:
       - name: Extract Android project
         run: unzip -q Gen3SaveManager.zip -d android-project
 
+      - name: Fix invalid Kotlin constants
+        run: |
+          sed -i 's/^\([[:space:]]*\)const[[:space:]]*val[[:space:]]*/\1val /' android-project/app/src/main/java/com/example/gen3saves/Names.kt
+
       - name: Configure Gradle for GitHub Actions
         run: |
           cat >> android-project/gradle.properties <<'EOF'
