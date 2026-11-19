@@ -31,18 +31,20 @@ jobs:
       - name: Extract Android project
         run: unzip -q Gen3SaveManager.zip -d android-project
 
-      - name: Enable AndroidX in extracted project
+      - name: Configure Gradle for GitHub Actions
         run: |
-          touch android-project/gradle.properties
-          if grep -q '^android.useAndroidX=' android-project/gradle.properties; then
-            sed -i 's/^android.useAndroidX=.*/android.useAndroidX=true/' android-project/gradle.properties
-          else
-            printf '\nandroid.useAndroidX=true\n' >> android-project/gradle.properties
-          fi
+          cat >> android-project/gradle.properties <<'EOF'
+          android.useAndroidX=true
+          android.enableJetifier=true
+          org.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8
+          org.gradle.daemon=false
+          org.gradle.parallel=false
+          org.gradle.workers.max=2
+          EOF
 
       - name: Build debug APK
         working-directory: android-project
-        run: gradle assembleDebug
+        run: gradle --no-daemon --max-workers=2 assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
