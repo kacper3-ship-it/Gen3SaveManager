@@ -1,5 +1,4 @@
 name: Build APK
-android.useAndroidX=true
 
 on:
   workflow_dispatch:
